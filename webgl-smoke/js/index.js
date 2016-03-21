@@ -34,17 +34,19 @@ function init() {
     //textTexture = THREE.ImageUtils.loadTexture('https://s3-us-west-2.amazonaws.com/s.cdpn.io/95637/quickText.png');
     textTexture = THREE.ImageUtils.loadTexture('quickText.png');
 
-    textMaterial = new THREE.MeshLambertMaterial({color: 0x00ffff, opacity: 1, map: textTexture, transparent: true, blending: THREE.AdditiveBlending});
+//    textMaterial = new THREE.MeshLambertMaterial({color: 0x000066, opacity: 1, map: textTexture, transparent: true, blending: THREE.AdditiveBlending});
+
+    textMaterial = new THREE.MeshLambertMaterial({color: 0x00FFFFFF, opacity: 1, map: textTexture, transparent: true, blending: THREE.AdditiveBlending});
     text = new THREE.Mesh(textGeo,textMaterial);
     text.position.z = 800;
     scene.add(text);
 
-    light = new THREE.DirectionalLight(0xffffff,0.5);
+    light = new THREE.DirectionalLight(0xffffff,0.6);
     light.position.set(-1,0,1);
     scene.add(light);
   
     smokeTexture = THREE.ImageUtils.loadTexture('https://s3-us-west-2.amazonaws.com/s.cdpn.io/95637/Smoke-Element.png');
-    smokeMaterial = new THREE.MeshLambertMaterial({color: 0x00dddd, map: smokeTexture, transparent: true});
+    smokeMaterial = new THREE.MeshLambertMaterial({color: 0xFFFFFF, opacity: 0.23, map: smokeTexture, transparent: true});
     smokeGeo = new THREE.PlaneGeometry(300,300);
     smokeParticles = [];
 
