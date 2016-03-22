@@ -103,7 +103,7 @@ function init() {
             console.log(dir);
 
             console.log(eventData);
-            //deviceOrientationHandler(tiltLR, tiltFB, dir);
+            deviceOrientationHandler(tiltLR, tiltFB, dir);
         }, false);
     } else {
         console.log("DeviceOrientationEvent Not supported");
@@ -151,6 +151,11 @@ function init() {
             TweenLite.to(camera.position, 5, {z: 750});
         }
     }
+    function deviceOrientationHandler(tiltLR, tiltFB, dir) {
+        mouseX = tiltLR;
+        mouseY = tiltFB;
+    }
+
     document.body.appendChild( renderer.domElement );
 }
 
