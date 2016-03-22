@@ -3,6 +3,8 @@ var camera, scene, renderer,
     mouse, raycaster;
 var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
+var mouseX = 0;
+var mouseY = 0;
 
 init();
 animate();
