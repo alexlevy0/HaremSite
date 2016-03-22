@@ -28,14 +28,14 @@ function init() {
     camera.position.z = 1000;
     scene.add(camera);
 
-    geometry = new THREE.CubeGeometry( 200, 200, 200 );
+    geometry = new THREE.BoxGeometry( 200, 200, 200 );
     material = new THREE.MeshLambertMaterial( { color: 0xaa6666, wireframe: false } );
 
     mesh = new THREE.Mesh( geometry, material );
     //scene.add( mesh );
     cubeSineDriver = 0;
  
-    textGeo = new THREE.PlaneGeometry(100,100);
+    textGeo = new THREE.PlaneBufferGeometry(100,100);
     THREE.ImageUtils.crossOrigin = '';
     textTexture = THREE.ImageUtils.loadTexture('quickText.png');
     textMaterial = new THREE.MeshLambertMaterial({
@@ -60,7 +60,7 @@ function init() {
         map: smokeTexture,
         transparent: true
     });
-    smokeGeo = new THREE.PlaneGeometry(300,300);
+    smokeGeo = new THREE.PlaneBufferGeometry(300,300);
     smokeParticles = [];
 
 
@@ -78,6 +78,36 @@ function init() {
     document.addEventListener('mousemove', onDocumentMouseMove, false);
 //    window.addEventListener( 'resize', onWindowResize, false );
 
+    if (window.DeviceMotionEvent) {
+        window.addEventListener('devicemotion', function(eventData) {
+            console.log("DeviceMotionEvent supported");
+            console.log(eventData);
+        }, false);
+    } else {
+        console.log("DeviceMotionEvent Not supported");
+    }
+    if (window.DeviceOrientationEvent) {
+        window.addEventListener('deviceorientation', function(eventData) {
+            console.log("DeviceOrientationEvent supported");
+            // gamma is the left-to-right tilt in degrees, where right is positive
+            var tiltLR = eventData.gamma;
+            console.log(tiltLR);
+
+            // beta is the front-to-back tilt in degrees, where front is positive
+            var tiltFB = eventData.beta;
+            console.log(tiltFB);
+
+            // alpha is the compass direction the device is facing in degrees
+            var dir = eventData.alpha;
+            console.log(dir);
+
+            console.log(eventData);
+            //deviceOrientationHandler(tiltLR, tiltFB, dir);
+        }, false);
+    } else {
+        console.log("DeviceOrientationEvent Not supported");
+    }
+
     raycaster = new THREE.Raycaster();
     mouse = new THREE.Vector2();
 
@@ -94,6 +124,9 @@ function init() {
         event.preventDefault();
         event.clientX = event.touches[0].clientX;
         event.clientY = event.touches[0].clientY;
+
+        mouseX = ( event.clientX - windowHalfX ) / 10;
+        mouseY = ( event.clientY - windowHalfY ) / 10;
         onDocumentMouseDown(event);
     }
     function onDocumentMouseMove(event) {
