@@ -91,19 +91,19 @@ function init() {
         window.addEventListener('deviceorientation', function(eventData) {
             console.log("DeviceOrientationEvent supported");
             // gamma is the left-to-right tilt in degrees, where right is positive
-            var tiltLR = eventData.gamma;
-            console.log(tiltLR);
+            var eGamma = eventData.gamma;
+            console.log(eGamma);
 
             // beta is the front-to-back tilt in degrees, where front is positive
-            var tiltFB = eventData.beta;
-            console.log(tiltFB);
+            var eBeta = eventData.beta;
+            console.log(eBeta);
 
             // alpha is the compass direction the device is facing in degrees
             var dir = eventData.alpha;
             console.log(dir);
 
             console.log(eventData);
-            deviceOrientationHandler(tiltLR, tiltFB, dir);
+            deviceOrientationHandler(eGamma, eBeta, dir);
         }, false);
     } else {
         console.log("DeviceOrientationEvent Not supported");
@@ -151,9 +151,9 @@ function init() {
             TweenLite.to(camera.position, 5, {z: 750});
         }
     }
-    function deviceOrientationHandler(tiltLR, tiltFB, dir) {
-        mouseX = tiltLR;
-        mouseY = tiltFB;
+    function deviceOrientationHandler(eGamma, eBeta, dir) {
+        mouseX = eGamma - 50;
+        mouseY = eBeta;
     }
 
     document.body.appendChild( renderer.domElement );
