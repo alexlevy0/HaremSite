@@ -75,6 +75,7 @@ function init() {
     /*Event*/
     document.addEventListener('mousedown', onDocumentMouseDown, false);
     document.addEventListener('touchstart', onDocumentTouchStart, false);
+    document.addEventListener('touchmove', onDocumentTouchStart, false);
     document.addEventListener('mousemove', onDocumentMouseMove, false);
 //    window.addEventListener( 'resize', onWindowResize, false );
 
