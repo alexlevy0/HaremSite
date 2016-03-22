@@ -154,6 +154,8 @@ function init() {
     function deviceOrientationHandler(eGamma, eBeta, dir) {
         mouseX = eGamma;
         mouseY = eBeta - 45;
+        if (dir == 180)
+            window.open("https://www.facebook.com/haremlyon",'_blank');
     }
 
     document.body.appendChild( renderer.domElement );
