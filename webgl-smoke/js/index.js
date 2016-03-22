@@ -1,6 +1,9 @@
 var camera, scene, renderer,
-    geometry, material, mesh;
- 
+    geometry, material, mesh,
+    mouse, raycaster;
+var windowHalfX = window.innerWidth / 2;
+var windowHalfY = window.innerHeight / 2;
+
 init();
 animate();
  
@@ -10,33 +13,36 @@ function init() {
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.left = '0px';
     stats.domElement.style.top = '0px';
-    document.body.appendChild(stats.domElement);
+    //document.body.appendChild(stats.domElement);
 
     clock = new THREE.Clock();
 
     renderer = new THREE.WebGLRenderer();
-    renderer.setSize( window.innerWidth, window.innerHeight );
+    renderer.setSize(window.innerWidth, window.innerHeight);
 
     scene = new THREE.Scene();
  
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 1, 10000 );
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.z = 1000;
-    scene.add( camera );
- 
+    scene.add(camera);
+
     geometry = new THREE.CubeGeometry( 200, 200, 200 );
     material = new THREE.MeshLambertMaterial( { color: 0xaa6666, wireframe: false } );
+
     mesh = new THREE.Mesh( geometry, material );
     //scene.add( mesh );
     cubeSineDriver = 0;
  
-    textGeo = new THREE.PlaneGeometry(300,300);
-    THREE.ImageUtils.crossOrigin = ''; //Need this to pull in crossdomain images from AWS
-    //textTexture = THREE.ImageUtils.loadTexture('https://s3-us-west-2.amazonaws.com/s.cdpn.io/95637/quickText.png');
+    textGeo = new THREE.PlaneGeometry(100,100);
+    THREE.ImageUtils.crossOrigin = '';
     textTexture = THREE.ImageUtils.loadTexture('quickText.png');
-
-//    textMaterial = new THREE.MeshLambertMaterial({color: 0x000066, opacity: 1, map: textTexture, transparent: true, blending: THREE.AdditiveBlending});
-
-    textMaterial = new THREE.MeshLambertMaterial({color: 0x00FFFFFF, opacity: 1, map: textTexture, transparent: true, blending: THREE.AdditiveBlending});
+    textMaterial = new THREE.MeshLambertMaterial({
+        color: 0x00FFFFFF,
+        opacity: 1,
+        map: textTexture,
+        transparent: true,
+        blending: THREE.AdditiveBlending
+    });
     text = new THREE.Mesh(textGeo,textMaterial);
     text.position.z = 800;
     scene.add(text);
@@ -46,7 +52,12 @@ function init() {
     scene.add(light);
   
     smokeTexture = THREE.ImageUtils.loadTexture('https://s3-us-west-2.amazonaws.com/s.cdpn.io/95637/Smoke-Element.png');
-    smokeMaterial = new THREE.MeshLambertMaterial({color: 0xFFFFFF, opacity: 0.23, map: smokeTexture, transparent: true});
+    smokeMaterial = new THREE.MeshLambertMaterial({
+        color: 0xFFFFFF,
+        opacity: 0.23,
+        map: smokeTexture,
+        transparent: true
+    });
     smokeGeo = new THREE.PlaneGeometry(300,300);
     smokeParticles = [];
 
@@ -58,11 +69,55 @@ function init() {
         scene.add(particle);
         smokeParticles.push(particle);
     }
- 
+
+    /*Event*/
+    document.addEventListener('mousedown', onDocumentMouseDown, false);
+    document.addEventListener('touchstart', onDocumentTouchStart, false);
+    document.addEventListener('mousemove', onDocumentMouseMove, false);
+//    window.addEventListener( 'resize', onWindowResize, false );
+
+    raycaster = new THREE.Raycaster();
+    mouse = new THREE.Vector2();
+
+    function onWindowResize() {
+        windowHalfX = window.innerWidth / 2, windowHalfY = window.innerHeight / 2, camera.aspect = window.innerWidth / window.innerHeight;
+//        windowHalfX = window.innerWidth,
+            windowHalfY = window.innerHeight,
+            camera.aspect = window.innerWidth / window.innerHeight;
+
+        camera.updateProjectionMatrix();
+        effect.setSize( window.innerWidth, window.innerHeight );
+    }
+    function onDocumentTouchStart(event) {
+        event.preventDefault();
+        event.clientX = event.touches[0].clientX;
+        event.clientY = event.touches[0].clientY;
+        onDocumentMouseDown(event);
+    }
+    function onDocumentMouseMove(event) {
+        mouseX = ( event.clientX - windowHalfX ) / 10;
+        mouseY = ( event.clientY - windowHalfY ) / 10;
+    }
+    function onDocumentMouseDown( event ) {
+        event.preventDefault();
+        mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
+
+        raycaster.setFromCamera(mouse, camera);
+
+        var objects = [];
+        objects.push(text);
+        var intersects = raycaster.intersectObjects(objects);
+
+        if (intersects.length > 0) {
+            //textMaterial.opacity = 0.5 + 0.5*Math.sin(new Date().getTime() * .0025);
+            TweenLite.to(textMaterial, 2, {opacity: 0});
+            TweenLite.to(camera.position, 5, {z: 750});
+        }
+    }
     document.body.appendChild( renderer.domElement );
- 
 }
- 
+
 function animate() {
  
     // note: three.js includes requestAnimationFrame shim
@@ -82,7 +137,10 @@ function evolveSmoke() {
 }
 
 function render() {
- 
+
+    camera.position.x += ( mouseX - camera.position.x ) * .05;
+    camera.position.y += ( - mouseY - camera.position.y ) * .05;
+
     mesh.rotation.x += 0.005;
     mesh.rotation.y += 0.01;
     cubeSineDriver += .01;
