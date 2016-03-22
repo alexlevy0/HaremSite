@@ -149,6 +149,11 @@ function init() {
             //textMaterial.opacity = 0.5 + 0.5*Math.sin(new Date().getTime() * .0025);
             TweenLite.to(textMaterial, 2, {opacity: 0});
             TweenLite.to(camera.position, 5, {z: 750});
+
+            $( "#hamburger" ).click(function() {
+                TweenLite.to(camera.position, 5, {z: 1000});
+                TweenLite.to(textMaterial, 5, {opacity: 1});
+            });
         }
     }
     function deviceOrientationHandler(eGamma, eBeta, dir) {
