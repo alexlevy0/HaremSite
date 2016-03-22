@@ -152,8 +152,8 @@ function init() {
         }
     }
     function deviceOrientationHandler(eGamma, eBeta, dir) {
-        mouseX = eGamma - 50;
-        mouseY = eBeta;
+        mouseX = eGamma;
+        mouseY = eBeta + 90;
     }
 
     document.body.appendChild( renderer.domElement );
