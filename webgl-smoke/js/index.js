@@ -5,6 +5,7 @@ var windowHalfX = window.innerWidth / 2;
 var windowHalfY = window.innerHeight / 2;
 var mouseX = 0;
 var mouseY = 0;
+var scene2, renderer2;
 
 init();
 animate();
@@ -15,29 +16,32 @@ function init() {
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.left = '0px';
     stats.domElement.style.top = '0px';
-    //document.body.appendChild(stats.domElement);
+    document.body.appendChild(stats.domElement);
 
     clock = new THREE.Clock();
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor( 0x000);
+    renderer.setClearColor(0x000);
     scene = new THREE.Scene();
  
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
     camera.position.z = 1000;
     scene.add(camera);
 
-    geometry = new THREE.BoxGeometry( 200, 200, 200 );
-    material = new THREE.MeshLambertMaterial( { color: 0xaa6666, wireframe: false } );
+    geometry = new THREE.BoxGeometry(200, 200, 200);
+    material = new THREE.MeshLambertMaterial({
+        color: 0xaa6666,
+        wireframe: false
+    });
 
     mesh = new THREE.Mesh( geometry, material );
     //scene.add( mesh );
     cubeSineDriver = 0;
- 
     textGeo = new THREE.PlaneBufferGeometry(100,100);
     THREE.ImageUtils.crossOrigin = '';
     textTexture = THREE.ImageUtils.loadTexture('quickText.png');
+
     textMaterial = new THREE.MeshLambertMaterial({
         color: 0x00FFFFFF,
         opacity: 1,
@@ -45,6 +49,7 @@ function init() {
         transparent: true,
         blending: THREE.AdditiveBlending
     });
+
     text = new THREE.Mesh(textGeo,textMaterial);
     text.position.z = 800;
     scene.add(text);
@@ -62,8 +67,6 @@ function init() {
     });
     smokeGeo = new THREE.PlaneBufferGeometry(300,300);
     smokeParticles = [];
-
-
     for (p = 0; p < 150; p++) {
         var particle = new THREE.Mesh(smokeGeo,smokeMaterial);
         particle.position.set(Math.random()*500-250,Math.random()*500-250,Math.random()*1000-100);
@@ -71,6 +74,34 @@ function init() {
         scene.add(particle);
         smokeParticles.push(particle);
     }
+
+    //CSS3D Scene
+    scene2 = new THREE.Scene();
+
+    ////HTML
+    element = document.createElement('iframe');
+    element.setAttribute("src", "https://www.weezevent.com/widget_multi.php?18392.5.1&amp;o=siteweb");
+    element.setAttribute("width", "90%");
+    element.setAttribute("height", "95%");
+    element.style.opacity = 0;
+    element.style.backgroundColor = "white";
+
+    console.log("DEBUG : opacity set to " + element.style.opacity);
+
+    //CSS Object
+    div = new THREE.CSS3DObject(element);
+    div.position.x = 8;
+    div.position.y = 9;
+    div.position.z = -8000;
+    scene2.add(div);
+
+    //CSS3D Renderer
+    renderer2 = new THREE.CSS3DRenderer();
+    renderer2.setSize(window.innerWidth, window.innerHeight);
+//    renderer.setSize(500, 400);
+    renderer2.domElement.style.position = 'absolute';
+    renderer2.domElement.style.top = 0;
+    document.body.appendChild(renderer2.domElement);
 
     /*Event*/
     document.addEventListener('mousedown', onDocumentMouseDown, false);
@@ -82,7 +113,6 @@ function init() {
     if (window.DeviceMotionEvent) {
         window.addEventListener('devicemotion', function(eventData) {
             console.log("DeviceMotionEvent supported");
-            console.log(eventData);
         }, false);
     } else {
         console.log("DeviceMotionEvent Not supported");
@@ -90,19 +120,9 @@ function init() {
     if (window.DeviceOrientationEvent) {
         window.addEventListener('deviceorientation', function(eventData) {
             console.log("DeviceOrientationEvent supported");
-            // gamma is the left-to-right tilt in degrees, where right is positive
             var eGamma = eventData.gamma;
-            console.log(eGamma);
-
-            // beta is the front-to-back tilt in degrees, where front is positive
             var eBeta = eventData.beta;
-            console.log(eBeta);
-
-            // alpha is the compass direction the device is facing in degrees
             var dir = eventData.alpha;
-            console.log(dir);
-
-            console.log(eventData);
             deviceOrientationHandler(eGamma, eBeta, dir);
         }, false);
     } else {
@@ -134,7 +154,7 @@ function init() {
         mouseX = ( event.clientX - windowHalfX ) / 10;
         mouseY = ( event.clientY - windowHalfY ) / 10;
     }
-    function onDocumentMouseDown( event ) {
+    function onDocumentMouseDown(event) {
         event.preventDefault();
         mouse.x = ( event.clientX / renderer.domElement.clientWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / renderer.domElement.clientHeight ) * 2 + 1;
@@ -149,10 +169,19 @@ function init() {
             //textMaterial.opacity = 0.5 + 0.5*Math.sin(new Date().getTime() * .0025);
             TweenLite.to(textMaterial, 2, {opacity: 0});
             TweenLite.to(camera.position, 5, {z: 750});
+//            TweenLite.to(element.style, 10, {opacity: 1});
+            //TweenLite.to(div.position, 3, {z: -0});
+            TweenLite.to(div.position, 6, { ease: Power4.easeOut, z: 0 });
 
-            $( "#hamburger" ).click(function() {
+            TweenLite.to(element.style, 8, { ease: Power4.easeOut, opacity: 1});
+
+            $("#hamburger").click(function() {
                 TweenLite.to(camera.position, 5, {z: 1000});
                 TweenLite.to(textMaterial, 5, {opacity: 1});
+                TweenLite.to(element.style, 2, {opacity: 1});
+                console.log("DEBUG : opacity set to " + element.style.opacity);
+                console.log("DEBUG : hamburger");
+
             });
         }
     }
@@ -167,11 +196,10 @@ function init() {
 }
 
 function animate() {
- 
     // note: three.js includes requestAnimationFrame shim
     stats.begin();
     delta = clock.getDelta();
-    requestAnimationFrame( animate );
+    requestAnimationFrame(animate);
     evolveSmoke();
     render();
     stats.end();
@@ -185,7 +213,6 @@ function evolveSmoke() {
 }
 
 function render() {
-
     camera.position.x += ( mouseX - camera.position.x ) * .05;
     camera.position.y += ( - mouseY - camera.position.y ) * .05;
 
@@ -193,6 +220,7 @@ function render() {
     mesh.rotation.y += 0.01;
     cubeSineDriver += .01;
     mesh.position.z = 100 + (Math.sin(cubeSineDriver) * 500);
+    renderer2.render(scene2, camera);
     renderer.render( scene, camera );
  
 }
