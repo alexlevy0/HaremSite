@@ -16,7 +16,7 @@ function init() {
     stats.domElement.style.position = 'absolute';
     stats.domElement.style.left = '0px';
     stats.domElement.style.top = '0px';
-    document.body.appendChild(stats.domElement);
+    //document.body.appendChild(stats.domElement);
 
     clock = new THREE.Clock();
 
@@ -81,7 +81,7 @@ function init() {
     ////HTML
     element = document.createElement('iframe');
     element.setAttribute("src", "https://www.weezevent.com/widget_multi.php?18392.5.1&amp;o=siteweb");
-    element.setAttribute("width", "90%");
+    element.setAttribute("width", "85%");
     element.setAttribute("height", "95%");
     element.style.opacity = 0;
     element.style.backgroundColor = "white";
@@ -171,7 +171,7 @@ function init() {
             TweenLite.to(camera.position, 5, {z: 750});
 //            TweenLite.to(element.style, 10, {opacity: 1});
             //TweenLite.to(div.position, 3, {z: -0});
-            TweenLite.to(div.position, 6, { ease: Power4.easeOut, z: 0 });
+            TweenLite.to(div.position, 6, { ease: Power4.easeOut, z: -500 });
 
             TweenLite.to(element.style, 8, { ease: Power4.easeOut, opacity: 1});
 
